@@ -92,16 +92,19 @@ filter2 <- subset(filter1, price <= 600)
 View(filter2)
 
 #question 20
-nrow(mtcars)
-ncol(mtcars)
+dim(mtcars)
 
 #question 21
-mpg21 <- mtcars$mtcars(mtcars$mpg == "21.0")
+mpg21 <- c(21.0)
 
 #question 22
-
-#question 23
+factorCyl <- factor(mtcars, levels = c("Four-Cyl", "Six-Cyl", "Eight-Cyl"))
+factorCyl
 
 #question 24
 
 #question 25 
+autoCars <- subset(mtcars, am == 1)
+autoCars
+manualCars <- subset(mtcars,am ==0)
+manualCars
