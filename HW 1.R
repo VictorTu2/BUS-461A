@@ -83,8 +83,13 @@ discountedPrice <- function (category, price)
 diamonds$discountedPrice <- discountedPrice(diamonds$cut, diamonds$price)
 
 #question 18
+countDiamonds <- tapply(diamonds$cut, diamonds$cut, length)
+countDiamonds
 
 #question 19
+filter1 <- subset(diamonds, cut == "Fair"|cut == "Good",)
+filter2 <- subset(filter1, price <= 600)
+View(filter2)
 
 #question 20
 nrow(mtcars)
