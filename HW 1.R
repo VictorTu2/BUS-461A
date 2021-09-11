@@ -93,18 +93,24 @@ View(filter2)
 
 #question 20
 dim(mtcars)
+View(mtcars)
 
 #question 21
-mpg21 <- c(21.0)
+mpg21df <- subset(mtcars, mpg == 21.0,)
+mpg21v <- as.character(mpg21df[1,])
+mpg21v
 
 #question 22
-factorCyl <- factor(mtcars, levels = c("Four-Cyl", "Six-Cyl", "Eight-Cyl"))
-factorCyl
+factorCyl <- factor(mtcars$cyl, levels = c(4,6,8), labels = c("Four-Cyl", "Six-Cyl","Eight-Cyl"))
+
+mtcars$factorCyl <- factorCyl
 
 #question 24
+print(unique(mtcars$factorCyl))
+#observations are in the word document that is uploaded to Moodle 
 
 #question 25 
 autoCars <- subset(mtcars, am == 1)
 autoCars
-manualCars <- subset(mtcars,am ==0)
+manualCars <- subset(mtcars,am == 0)
 manualCars
