@@ -29,7 +29,6 @@ filterCriteria <- c(1:30)
 
 #question 9 
 filterCriteria <- c(F,F,F,F,T,F,F,F,F,T,F,F,F,F,T,F,F,F,F,T,F,F,F,F,T,F,F,F,F,T)
-print(filterCriteria)
 
 #question 10
 filteredEmployees <- employees[filterCriteria,]
@@ -55,7 +54,6 @@ goodDiamonds <- diamonds[diamonds$cut == "Good",]
 print(unique(diamonds['cut']))
 
 #question 17
-
 discountedPrice <- function (category, price) 
 {
   if (category == "Fair") 
@@ -89,11 +87,10 @@ countDiamonds
 #question 19
 filter1 <- subset(diamonds, cut == "Fair"|cut == "Good",)
 filter2 <- subset(filter1, price <= 600)
-View(filter2)
+head(filter2)
 
 #question 20
 dim(mtcars)
-View(mtcars)
 
 #question 21
 mpg21df <- subset(mtcars, mpg == 21.0,)
@@ -102,7 +99,6 @@ mpg21v
 
 #question 22
 factorCyl <- factor(mtcars$cyl, levels = c(4,6,8), labels = c("Four-Cyl", "Six-Cyl","Eight-Cyl"))
-
 mtcars$factorCyl <- factorCyl
 
 #question 24
@@ -111,6 +107,6 @@ print(unique(mtcars$factorCyl))
 
 #question 25 
 autoCars <- subset(mtcars, am == 1)
-autoCars
+head(autoCars)
 manualCars <- subset(mtcars,am == 0)
-manualCars
+head(manualCars)
