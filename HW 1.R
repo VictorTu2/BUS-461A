@@ -97,7 +97,7 @@ View(mtcars)
 
 #question 21
 mpg21df <- subset(mtcars, mpg == 21.0,)
-mpg21v <- as.character(mpg21df[1,])
+mpg21v <-row.names(mpg21df)
 mpg21v
 
 #question 22
