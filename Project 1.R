@@ -2,12 +2,7 @@
 #' first 6 rows. Also, display the columns and their descriptions (10 points)
 #' File name: bank-full.csv
 
-#' Before even running this code, I had to download bank-full.csv from the internet
-#' Next, because this particular csv file was separated by semi-colons instead of
-#' commas, I had to fix the dataset within Excel. This allowed for the data to be 
-#' in individual columns. 
-
-df <- read.csv(file = '/Users/victortu/Desktop/ BUS 461/BUS-461A/Csv files/bank-full.csv' )
+df <- read.csv(file = '/Users/victortu/Desktop/ BUS 461/BUS-461A/Csv files/bank-full.csv', sep = ";" )
 head(df)
 
 colnames(df)
