@@ -42,7 +42,6 @@ The above boxplot represents the 95th percentile values of the "campaign" column
 
 ## Question 5: 
 Part 1:    
-
 ```{r}
 hist(per95, col = "lightyellow", main = "Hist of per95")
 ```
@@ -108,4 +107,4 @@ plot(bank_full$campaign, bank_full$duration, xlab = "Phone call length (min)", y
 Observations:   
 -Calls with a shorter duration have an increased number of times a customer is contacted, and vice versa     
 -The outliers are at the bottom right of the scatterplot and top left     
--In Question 2, I mentioned that the "campaign" column values are rigth skewed, this seems to be the same case for this graph as well     
+-In Question 2, I mentioned that the "campaign" column values are rigth skewed, this seems to be the same case for this graph as well   
