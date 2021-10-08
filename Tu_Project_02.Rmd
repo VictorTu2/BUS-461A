@@ -76,7 +76,7 @@ dfstudent <- subset(bank_full, job == "student" & balance >= "0")
 boxplot(dfmanagement$balance, main = "Management Bal")
 boxplot(dfstudent$balance, main = "Student Bal")
 ```
-
+ 
 From the boxplots for managmement balance and student balance, we can see that the balance of a management, on average, is larger than students. Both box plots have outliers and follow the same trends.
 
 ## Question 9 
