@@ -69,30 +69,15 @@ barplot(graphCountDeposits, col = "lightyellow", main = "Comparing customers wit
 ```
 
 ## Question 8:
-# ```{r}
-# install.packages('dyplr')
-# library(dplyr)
-# ```
-# ```{r}
-# studentBalance <- bank_full %>% filter(job == 'student') 
-# studentBalance <- quantile(studentBalance$balance, c(0.75))['75%']
-# 
-# managementBalance <- bank_full %>% filter(job == 'management') 
-# managementBalance <- quantile(managementBalance$balance, c(0.75))['75%']
-# 
-# bank_full <- bank_full %>% 
-#     mutate(filterCondition = case_when((job == "student") & 
-#                                            (balance <= studentBalance) &
-#                                            (balance >= 0) ~ 1,
-#                                        (job == "management") & 
-#                                            (balance <= managementBalance) & 
-#                                            (balance >= 0) ~ 2,
-#                                        TRUE ~ 3)
-#     )
-# mgmtAndStudentsDF <- bank_full %>% filter((filterCondition == 1) | (filterCondition == 2))
-# 
-# boxplot(studentBalance ~ managementBalance, data = mgmtAndStudentsDF, col = "red")
-# ```
+```{r}
+dfmanagement <- subset(bank_full, job == "management" & balance >= "0")
+dfstudent <- subset(bank_full, job == "student" & balance >= "0")
+
+boxplot(dfmanagement$balance, main = "Management Bal")
+boxplot(dfstudent$balance, main = "Student Bal")
+```
+
+From the boxplots for managmement balance and student balance, we can see that the balance of a management, on average, is larger than students. Both box plots have outliers and follow the same trends.
 
 ## Question 9 
 ```{r}
@@ -107,4 +92,4 @@ plot(bank_full$campaign, bank_full$duration, xlab = "Phone call length (min)", y
 Observations:   
 -Calls with a shorter duration have an increased number of times a customer is contacted, and vice versa     
 -The outliers are at the bottom right of the scatterplot and top left     
--In Question 2, I mentioned that the "campaign" column values are rigth skewed, this seems to be the same case for this graph as well   
+-In Question 2, I mentioned that the "campaign" column values are rigth skewed, this seems to be the same case for this graph as well  
