@@ -76,8 +76,11 @@ dfstudent <- subset(bank_full, job == "student" & balance >= "0")
 boxplot(dfmanagement$balance, main = "Management Bal")
 boxplot(dfstudent$balance, main = "Student Bal")
 ```
+<<<<<<< HEAD
  
 From the boxplots for managmement balance and student balance, we can see that the balance of a management, on average, is larger than students. Both box plots have outliers and follow the same trends.
+=======
+>>>>>>> 861e9efec8cd1ec395835edb16913fc55fa591e2
 
 ## Question 9 
 ```{r}
@@ -92,4 +95,8 @@ plot(bank_full$campaign, bank_full$duration, xlab = "Phone call length (min)", y
 Observations:   
 -Calls with a shorter duration have an increased number of times a customer is contacted, and vice versa     
 -The outliers are at the bottom right of the scatterplot and top left     
+<<<<<<< HEAD
 -In Question 2, I mentioned that the "campaign" column values are rigth skewed, this seems to be the same case for this graph as well
+=======
+-In Question 2, I mentioned that the "campaign" column values are rigth skewed, this seems to be the same case for this graph as well   
+>>>>>>> 861e9efec8cd1ec395835edb16913fc55fa591e2
