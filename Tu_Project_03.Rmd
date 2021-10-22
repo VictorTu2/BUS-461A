@@ -1,0 +1,239 @@
+---
+title: "Project_03"
+author: "Victor Tu"
+date: "10/20/2021"
+---
+
+```{r echo=FALSE}
+library(tidyverse)
+set.seed(893)
+
+# The below code creates a dataset rolls that is required for this project 
+
+#' ----------------------------------------------------------------- '#
+#             Parameters required for this code to run 
+#' ----------------------------------------------------------------- '#
+sampleSize <- 1000 # Create a dataset with sampleSize no.of. records 
+outStandingBalance <- 10000 # Initial balance given to a player to pay Roulette 
+winProbability <- 0.4 # Win probability. Out of 10 random guesses, player wins 40% of time (Too lucky!!!)
+#' ----------------------------------------------------------------- '#
+
+currentBet <- rep(10, sampleSize)
+currentOutcome <- rbinom(sampleSize, 1, prob = c(winProbability))
+lag1 <- lag(currentOutcome, 1L)
+lag2 <- lag(currentOutcome, 2L)
+lag3 <- lag(currentOutcome, 3L)
+lag4 <- lag(currentOutcome, 4L)
+lag5 <- lag(currentOutcome, 5L)
+lag6 <- lag(currentOutcome, 6L)
+lag7 <- lag(currentOutcome, 7L)
+lag8 <- lag(currentOutcome, 8L)
+lag9 <- lag(currentOutcome, 9L)
+lag10 <- lag(currentOutcome, 10L)
+lag11 <- lag(currentOutcome, 11L)
+lag12 <- lag(currentOutcome, 12L)
+rolls <- data.frame(currentBet, currentOutcome, lag1, lag2,
+                    lag3, lag4, lag5, lag6, lag7, lag8, lag9, lag10, lag11, 
+                    lag12)
+
+rolls <- rolls %>% mutate(currentBet  = ifelse(lag1 == 1, 10,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & (lag2 == 1), 20,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & (lag3 == 1), 40,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & (lag4 == 1), 80,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & (lag5 == 1), 160,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & ((lag5 == 0) | is.na(lag5)) & (lag6 == 1), 320,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & ((lag5 == 0) | is.na(lag5)) & ((lag6 == 0) | is.na(lag6)) 
+        & (lag7 == 1), 640,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & ((lag5 == 0) | is.na(lag5)) & ((lag6 == 0) | is.na(lag6)) 
+        & ((lag7 == 0) | is.na(lag7)) & (lag8 == 1), 1280,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & ((lag5 == 0) | is.na(lag5)) & ((lag6 == 0) | is.na(lag6)) 
+        & ((lag7 == 0) | is.na(lag7)) & ((lag8 == 0) | is.na(lag8)) & (lag9 == 1), 2560,
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & ((lag5 == 0) | is.na(lag5)) & ((lag6 == 0) | is.na(lag6)) 
+        & ((lag7 == 0) | is.na(lag7)) & ((lag8 == 0) | is.na(lag8)) & ((lag9 == 0) | is.na(lag9)) 
+        & (lag10 == 1), 5120, 
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & ((lag5 == 0) | is.na(lag5)) & ((lag6 == 0) | is.na(lag6)) 
+        & ((lag7 == 0) | is.na(lag7)) & ((lag8 == 0) | is.na(lag8)) & ((lag9 == 0) | is.na(lag9)) 
+        & ((lag10 == 0) | is.na(lag10)) & (lag11 == 1), 10240, 
+        ifelse( ((lag1 == 0) | is.na(lag1)) & ((lag2 == 0) | is.na(lag2)) & ((lag3 == 0) | is.na(lag3)) 
+        & ((lag4 == 0) | is.na(lag4)) & ((lag5 == 0) | is.na(lag5)) & ((lag6 == 0) | is.na(lag6)) 
+        & ((lag7 == 0) | is.na(lag7)) & ((lag8 == 0) | is.na(lag8)) & ((lag9 == 0) | is.na(lag9)) 
+        & ((lag10 == 0) | is.na(lag10)) & ((lag11 == 0) | is.na(lag11)) & (lag12 == 1), 20480, 10
+        )))))))))))))
+
+rolls <- rolls %>% mutate(currentBet = ifelse(is.na(currentBet), 10, currentBet))
+
+rolls <- rolls[,c(1,2)]
+rolls$balance <- rep(outStandingBalance,sampleSize)
+
+for (i in 1:sampleSize) {
+    if (rolls[i, "currentOutcome"] == 0) {
+        outStandingBalance <- outStandingBalance - rolls[i, "currentBet"]
+    } else { 
+        outStandingBalance <- outStandingBalance + (rolls[i, "currentBet"]/10)*35
+    }
+    rolls[i, "balance"] <- outStandingBalance
+}
+
+startRecord <- 0 
+if (nrow(rolls[rolls$balance < 0, ]) > 0) { 
+    startRecord <- min(as.integer( row.names(rolls[rolls$balance < 0, ]) ))
+    rolls[startRecord:sampleSize, c("currentBet", "balance") ] <- 0 
+} else {
+    startRecord <- nrow(rolls)
+}
+
+```
+
+``` {r echo = FALSE}
+head(rolls)
+```
+
+## Create below plots:
+
+Plot 1 --> Create a scatter plot using ggplot as shown in the project_03.docx file uploaded to moodle 
+Plot 2 --> Change the win probability to 20% and create plot 2 as shown in project_03.docx file uploaded to moodle
+Plot 3 --> Create a plot with multiple facets as shown in project_03.docx file uploaded to moodle
+Plot 4 --> Create a bar plot with multiple facets as shown in project_03.docx file uploaded to moodle
+
+Please provide your conclusion, what do you infer comparing these four plots? 
+
+Plot 1:
+```{r}
+p40 <- ggplot(data = rolls, mapping = aes(x = as.numeric(row.names(rolls)), y = balance)) + geom_point() + labs(title = "Cumulative money won at roulette table over multiple bets", x = "Bets!", y = "$Dollars")
+p40
+```
+
+In order to produce this plot, I had ggplot read the rolls data and allowed the x-values to be the index of the rolls dataset and the y-values be the balance values. 
+
+
+```{r echo=FALSE}
+library(tidyverse)
+set.seed(893)
+
+# The below code creates a dataset rolls that is required for this project 
+
+#' ----------------------------------------------------------------- '#
+#             Parameters required for this code to run 
+#' ----------------------------------------------------------------- '#
+sampleSize2 <- 1000 # Create a dataset with sampleSize no.of. records 
+outStandingBalance2 <- 10000 # Initial balance given to a player to pay Roulette 
+winProbability2 <- 0.2 # Win probability. Out of 10 random guesses, player wins 40% of time (Too lucky!!!)
+#' ----------------------------------------------------------------- '#
+
+currentBet2 <- rep(10, sampleSize2)
+currentOutcome2 <- rbinom(sampleSize2, 1, prob = c(winProbability2))
+lag12 <- lag(currentOutcome2, 1L)
+lag22 <- lag(currentOutcome2, 2L)
+lag32 <- lag(currentOutcome2, 3L)
+lag42 <- lag(currentOutcome2, 4L)
+lag52 <- lag(currentOutcome2, 5L)
+lag62 <- lag(currentOutcome2, 6L)
+lag72 <- lag(currentOutcome2, 7L)
+lag82 <- lag(currentOutcome2, 8L)
+lag92 <- lag(currentOutcome2, 9L)
+lag102 <- lag(currentOutcome2, 10L)
+lag112 <- lag(currentOutcome2, 11L)
+lag122 <- lag(currentOutcome2, 12L)
+rolls2 <- data.frame(currentBet2, currentOutcome2, lag12, lag22,
+                    lag32, lag42, lag52, lag62, lag72, lag82, lag92, lag102, lag112, 
+                    lag122)
+
+rolls2 <- rolls2 %>% mutate(currentBet2  = ifelse(lag12 == 1, 10,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & (lag22 == 1), 20,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & (lag32 == 1), 40,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & (lag42 == 1), 80,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & (lag52 == 1), 160,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & ((lag52 == 0) | is.na(lag52)) & (lag62 == 1), 320,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & ((lag52 == 0) | is.na(lag52)) & ((lag62 == 0) | is.na(lag62)) 
+        & (lag72 == 1), 640,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & ((lag52 == 0) | is.na(lag52)) & ((lag62 == 0) | is.na(lag62)) 
+        & ((lag72 == 0) | is.na(lag72)) & (lag82 == 1), 1280,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & ((lag52 == 0) | is.na(lag52)) & ((lag62 == 0) | is.na(lag62)) 
+        & ((lag72 == 0) | is.na(lag72)) & ((lag82 == 0) | is.na(lag82)) & (lag92 == 1), 2560,
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & ((lag52 == 0) | is.na(lag52)) & ((lag62 == 0) | is.na(lag62)) 
+        & ((lag72 == 0) | is.na(lag72)) & ((lag82 == 0) | is.na(lag82)) & ((lag92 == 0) | is.na(lag92)) 
+        & (lag102 == 1), 5120, 
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & ((lag52 == 0) | is.na(lag52)) & ((lag62 == 0) | is.na(lag62)) 
+        & ((lag72 == 0) | is.na(lag72)) & ((lag82 == 0) | is.na(lag82)) & ((lag92 == 0) | is.na(lag92)) 
+        & ((lag102 == 0) | is.na(lag102)) & (lag112 == 1), 10240, 
+        ifelse( ((lag12 == 0) | is.na(lag12)) & ((lag22 == 0) | is.na(lag22)) & ((lag32 == 0) | is.na(lag32)) 
+        & ((lag42 == 0) | is.na(lag42)) & ((lag52 == 0) | is.na(lag52)) & ((lag62 == 0) | is.na(lag62)) 
+        & ((lag72 == 0) | is.na(lag72)) & ((lag82 == 0) | is.na(lag82)) & ((lag92 == 0) | is.na(lag92)) 
+        & ((lag102 == 0) | is.na(lag102)) & ((lag112 == 0) | is.na(lag112)) & (lag122 == 1), 20480, 10
+        )))))))))))))
+
+rolls2 <- rolls2 %>% mutate(currentBet2 = ifelse(is.na(currentBet2), 10, currentBet2))
+
+rolls2 <- rolls2[,c(1,2)]
+rolls2$balance2 <- rep(outStandingBalance2,sampleSize2)
+
+for (i in 1:sampleSize2) {
+    if (rolls2[i, "currentOutcome2"] == 0) {
+        outStandingBalance2 <- outStandingBalance2 - rolls2[i, "currentBet2"]
+    } else { 
+        outStandingBalance2 <- outStandingBalance2 + (rolls2[i, "currentBet2"]/10)*35
+    }
+    rolls2[i, "balance2"] <- outStandingBalance2
+}
+
+startRecord2 <- 0 
+if (nrow(rolls2[rolls2$balance2 < 0, ]) > 0) { 
+    startRecord2 <- min(as.integer( row.names(rolls2[rolls2$balance2 < 0, ]) ))
+    rolls2[startRecord2:sampleSize2, c("currentBet2", "balance2") ] <- 0 
+} else {
+    startRecord2 <- nrow(rolls2)
+}
+
+```
+
+Plot 2:
+```{r}
+p20 <- ggplot(data = rolls2, mapping = aes(x = as.numeric(row.names(rolls2)), y = balance2)) + geom_point() + labs(title = "Cumulative money won at roulette table over multiple bets, 20%", x = "Bets!", y = "$Dollars")
+p20
+```
+
+
+In order to produce this plot, I changed the win probability to 20% and called the ggplot function the same way as Plot 1. 
+
+
+Plot 3:
+```{r}
+rollsnew = rolls %>% mutate(percentage = 40)
+rollsnew20 = rolls2 %>% mutate(percentage = 20)
+colnames(rollsnew20) = c("currentBet", "currentOutcome", "balance", "percentage")
+rollsplot3 = rbind(rollsnew, rollsnew20)
+
+plot3 = ggplot( rollsplot3 , aes(x = as.numeric(row.names(rollsplot3)), y=balance )) + labs(title = "Cumulative money won at roulette table over multiple bets", x = "Bets!", y = "$Dollars") + geom_point() + facet_grid( ~percentage)
+plot3
+```
+
+
+In order to create this plot, I first created a new dataset that appended the 40% dataset to include the 20% dataset. Next, I called the ggplot function to include a facet and filtered based on my made up percentage column. 
+
+
+Plot 4:
+```{r}
+plot4 = ggplot( rollsplot3 , aes(x = as.numeric(row.names(rollsplot3)), y=balance ))+ labs(title = "Cumulative money won at roulette table over multiple bets", x = "Bets!", y = "$Dollars") + geom_bar(stat = "identity",fill="blue") + facet_grid( ~percentage)
+plot4
+```
+
+
+In order to produce this plot I did the same thing as Plot 3, but changed geom_point to geom_bar and included geom_bar's arguments. 
+
+I infer that it seems like we almost want a lower win percentage (20%) because it takes longer for us to go to $0 dollars than it does with 50%. 
