@@ -1,0 +1,37 @@
+---
+title: "Homework_03"
+author: "Victor Tu"
+date: "10/29/2021"
+output: html_document
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, message = FALSE, results = 'hide'}
+library(tidyverse)
+library(nycflights13)
+str(flights)
+library(lubridate)
+```
+
+```{r, results = FALSE}
+PortlandFlights <- flights[flights[,c("dest")] == "PDX", ]
+with(PortlandFlights, plot(time_hour, dep_delay) )
+```
+
+
+
+Plot the delay of flights arriving to Portland airport from JFK Airport during the month of July and September side by side. Hint: using par(mfrow=c(1,2)) - Do not use ggplot2 for this HW. Name the x-axis, y-axis and title appropriately. Reference plot without titles and axis labels are provided in the generated HTML. You need to generate the graphs with axis labels and titles.
+
+
+```{r echo = TRUE}
+julyjfkflights <- subset(PortlandFlights, origin == "JFK" &  month == "7")
+sepjfkflights <- subset(PortlandFlights, origin == "JFK" & month == "9")
+par(mfrow = c(1,2))
+plot(julyjfkflights$time_hour, julyjfkflights$dep_delay, xlab = "time_hour", ylab = "dep_delay", main = "July Delays", ylim = c(-5,300))
+plot(sepjfkflights$time_hour, sepjfkflights$dep_delay, xlab = "time_hour", ylab = "dep_delay", main = "September Delays", ylim = c(-5,300))
+```
+
+
