@@ -1,0 +1,96 @@
+---
+title: "Tu_Project_04"
+author: "Victor Tu" 
+output: html_document
+---
+
+```{r, echo = FALSE}
+#install.packages("rmarkdown")
+#install.packages("tidyverse")
+library("ggplot2")
+```
+
+#Question 1
+```{r}
+oneanova <- aov(carat ~ cut, data = diamonds)
+summary(oneanova)
+```
+
+H0: The mean carat among all 5 groups are identical 
+Ha: At least one of the groups have a mean carat that is different than the rest of the group
+
+From the one-way anova summary, we can see that p<0.05. Therefore, we reject H0 and accept Ha. We conclude that at least one of the groups have a mean carat that is different than the rest of the group. 
+
+
+#Question 2
+```{r}
+summary(oneanova)
+```
+H0: The mean carat among all 5 groups are identical 
+Ha: At least one of the groups have a mean carat that is different than the rest of the group
+
+With the assumption that the groups have equal variances, it is fair to conclude that we reject H0 because p<0.05. Results are exactly the same as question 1, i.e, we conclude that at least one of the groups have a mean carat that is different than the rest of the group. 
+
+
+#Question 3 
+```{r}
+TukeyHSD(oneanova)
+tuk <- TukeyHSD(oneanova)
+psig=as.numeric(apply(tuk$`cut`[,2:3],1,prod)>=0)+1
+op=par(mar=c(4.2,9,3.8,2))
+plot(tuk,col=psig,yaxt="n")
+for (j in 1:length(psig)){
+axis(2,at=j,labels=rownames(tuk$`cut`)[length(psig)-j+1],
+     las=1,cex.axis=.8,col.axis=psig[length(psig)-j+1])
+}
+par(op)
+```
+When comparing all 5 groups amongst each other, we can see that all of them have differences in mean levels of carat. However, Very Good-Good and Premium-Good are the two comparisons that are closest to mean difference of 0. 
+
+
+#Question 4 
+```{r}
+newdf <- subset(diamonds, cut == "Good" | cut == "Very Good")
+newoneanova <- aov(carat ~ cut, data = newdf)
+summary(newoneanova)
+```
+
+H0: The mean carat among both groups (Good and Very Good) are identical
+Ha: At least one of the groups have a mean carat that is different than the other group
+
+From the one-way anova summary, we can see that p<0.05. Therefore, we reject H0 and accept Ha. We conclude that at least one of the groups have a mean carat that is different than the other group. 
+
+
+#Question 5
+```{r}
+TukeyHSD(newoneanova)
+plot(TukeyHSD(newoneanova))
+```
+
+From the TukeyHSD plot, we can see that the mean differences of carat between Very Good and Good are quite small (about -0.043). 
+
+
+#Question 6 
+```{r}
+fit <- lm(price ~ cut + carat + color + depth, data = diamonds)
+summary(fit)
+```
+
+The overall model has large standard error. This makes it difficult for us to trust our calculations because of how large SE is. As for the significance of the individual coefficients, this is hard to trust as well because there are a lot of negative numbers, which is odd becuase the dependent variable for each diamond is price.
+
+
+#Question 7
+```{r}
+fitforward <- step(fit, direction = "forward")
+plot(fitforward)
+```
+
+
+#Question 8
+```{r}
+sampleSet <- sample(1:nrow(diamonds), 1000, replace = FALSE)
+sampleData <- diamonds[sampleSet,]
+plot(sampleData)
+```
+
+
