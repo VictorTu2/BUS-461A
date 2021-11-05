@@ -65,7 +65,7 @@ From the one-way anova summary, we can see that p<0.05. Therefore, we reject H0 
 ```{r}
 TukeyHSD(newoneanova)
 plot(TukeyHSD(newoneanova))
-```
+``` 
 
 From the TukeyHSD plot, we can see that the mean differences of carat between Very Good and Good are quite small (about -0.043). 
 
