@@ -1,0 +1,165 @@
+---
+title: "Logistic Regression- Project 5"
+author: "Victor Tu"
+date: "11/8/2021"
+due date: "11/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Logistic Regression 
+
+In statistics, the logistic model (or logit model) is used to model the probability of a certain class or event existing such as pass/fail, win/lose, alive/dead or healthy/sick. This can be extended to model several classes of events such as determining whether an image contains a cat, dog, lion, etc. Each object being detected in the image would be assigned a probability between 0 and 1, with a sum of one.
+
+The equation for Logistic Regression can be written as: 
+
+$$
+output = log{_e}(\frac{p}{1-p}) = \beta_0 + \beta_1 x + \beta_2 x^2 + ... + \beta_n x^n \
+$$
+The "output" is also called logit. 
+Another name for "output" is the log odds ratio. 
+p is the probability of an event occuring or not.
+So the odds ratio is: (Probability of an event occurring divided by probability of an event not occurring)
+
+$$
+\frac{p}{1-p}
+$$
+Suppose: 
+$$
+\begin{aligned}
+        Y = \beta_0 + \beta_1 x + \beta_2 x^2 + ... + \beta_n x^n  \\   
+\end{aligned}
+$$
+
+Then
+
+$$
+log{_e}(\frac{p}{1-p}) = Y \\
+\frac{p}{1-p} = e^Y \\
+$$
+
+Solving for p, we will get
+
+$$
+p = \frac{e^Y}{1+e^Y} \\
+$$
+As Y increases positively p approaches  1 and as Y increases negatively, then p approaches to zero
+
+Using the Bank dataset provided in the previous projects, estimate a logistic regression model using the glm (generalized linear model) function. The logistic regression should estimate the probability of a customer taking a term deposit. 
+
+Obtain the coefficients of the log odds of a customer taking term deposit and write your interpretations in terms of the variables taken for analysis. 
+
+DV: y
+IV: age, marital, balance, housing, loan, campaign 
+
+Reading in bankFull
+```{r}
+bankFull <- read.csv(file = '/Users/victortu/Desktop/ BUS 461/BUS-461A/Csv files/bank-full.csv', sep = ";")
+
+# Convert the output variable to 0 or 1 
+bankFull$y <- ifelse(bankFull$y == "yes", 1, 0)
+```
+
+Selecting train and test samples
+```{r}
+# use the seed 100 for selecting the samples for reproducibility 
+# Use 80% of your data to create a training sample 
+# Use 20% of your data to create a test sample 
+set.seed(100)
+sort = sort(sample(nrow(bankFull), nrow(bankFull)*.8))
+train <- bankFull[sort,]
+test <- bankFull[-sort,]
+```
+
+Running the Generalized Linear Regression model of binomial family
+```{r}
+# Print the summary of the model 
+# The model returns coefficients that impact the outcome variable y
+# Interpret the results in terms of log odds 
+# Refer: https://stats.idre.ucla.edu/r/dae/logit-regression/ for understanding model interpretation 
+# 
+fit <- glm(formula = y ~ age + marital + balance + housing + loan + campaign, data = train, family = binomial)
+summary(fit)
+```
+
+GLM gives us coefficients. Here are the interpretted results of log odds: 
+
+* For every one unit change in age, the log odds of y increase by 8.049e-03. 
+* For every one unit change in maritalmarried, the log odds of y decrease by -2.000e-01.
+* For every one unit change in maritalsingle, the log odds of y increase by 2.668e-01.
+* For every one unit change in balance, the log odds of y increase by 3.025e-05. 
+* For every one unit change in housing, the log odds of y decrease by 7.951e-01.
+* For every one unit change in loan, the log odds of y decrease by 6.329e-01. 
+* For every one unit change in campaign, the log odds of y decrease by 1.306e-01. 
+
+Making predictions for train sample
+```{r}
+# Create a confusion matrix using the train sample and calculate the accuracy of the model using training sample  
+train1 <- subset(train,select = c(y,age,marital,balance,housing,loan,campaign))
+modelOutcome <- predict(fit, train1, type = 'response')
+modelOutcome1 <- ifelse(modelOutcome >= 0.5, 1, 0)
+train1$Prediction <- modelOutcome1
+table(train1$y,train1$Prediction)
+```
+
+For finding accuracy:
+```{r}
+contingencyTable <- as.data.frame(with(train1, table(y,Prediction)))
+accuracy <- sum(contingencyTable[contingencyTable$Prediction == contingencyTable$y,]$Freq) /
+    sum(contingencyTable$Freq)
+accuracy
+```
+
+Making predictions for test sample
+```{r}
+# Create a confusion matrix using the test sample and calculate the accuracy of the model using test sample 
+test1 <- subset(test,select = c(y,age,marital,balance,housing,loan,campaign))
+modelOutcome2 <- predict(fit, test1, type = 'response')
+modelOutcome3 <- ifelse(modelOutcome2 >= 0.5, 1, 0)
+test1$Prediction <- modelOutcome3
+table(test1$y,test1$Prediction)
+```
+
+For finding accuracy:
+```{r}
+contingencyTable <- as.data.frame(with(test1, table(y,Prediction)))
+accuracy <- sum(contingencyTable[contingencyTable$Prediction == contingencyTable$y,]$Freq) /
+    sum(contingencyTable$Freq)
+accuracy
+```
+
+```{r}
+# Include code to create odds ratio (Probability of an event occurring divided by 
+# Probability of an event not occurring. If the customer takes a term deposit with 
+# 80% probability, then the odds ratio would be 0.8/0.2 = 4)
+
+# exp(coef(<<Give your model here>>))
+
+# In the student admission example based on GRE, GPA, and School ranking, the odds ratio of 1.0023
+# for GRE provides information that one unit increase in GRE score leads to an increase in the odds # of getting admitted by 1.0023 times. Interpret your results in the same format. 
+```
+
+We can see that the true positive for the number of customers to take a term deposit is 3. From this, we can calculate the odds ratio:
+```{r}
+p <- 3/nrow(train)
+trainOddsRatio <- p/(1-p)
+trainOddsRatio
+```
+
+Similarly, we can do the same for test, who only has a true positive of 1. 
+
+```{r}
+p <- 1/nrow(test)
+testOddsRatio <- p/(1-p)
+testOddsRatio
+```
+
+As we can see, these numbers are extremely small. Therefore, the odds of customers to take out a term deposit are small. 
+
+**_As a student of the Dr. Robert B. Pamplin Jr. School of Business Administration I strive to uphold academic integrity and promote ethical behavior. In doing so, I pledge on my honor that I have not given, received, or used any unauthorized materials or assistance on this examination or assignment. I further pledge that I have not engaged in plagiarism and I have cited all appropriate sources._**
+
+Student Signature: Victor Tu 
+
