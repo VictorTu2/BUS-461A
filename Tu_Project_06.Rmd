@@ -1,0 +1,124 @@
+---
+title: "Project_06.Rmd"
+author: "Victor Tu"
+date: "11/28/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This project will put your knowledge of interpreting time-dependent data to the test.
+Time series have become a hot topic, particularly due to their widespread application in finance, supply chain management, and production and inventory planning. Representing/storing time series data is an important step because it affects not only data processing but also which functions can be used to visualize trends over time. The most commonly used packages for representing time series data are xts and zoo, while ts objects are most commonly used for univariate time series. 
+
+In this project, you need to capture the data from web for Coronavirus confirmed cases and filter the records only for Oregon state.
+
+<ul>
+  <li>Visualize the confirmed cases till date in 2021 </li>
+  <li>Visualize the confirmed cases over a 15-day moving average trend </li>
+  <li>Compare the visualizations of moving averages with a trend that has a lot of seasonality (Tesla stock data). This can be used as a reference to plot moving average and make predictions </li>
+  <li>Predict the next 15 days of confirmed cases and plot the predictions. </li>
+</ul>
+
+
+```{r}
+# Run the code below to extract the Coronavirus data from web
+# The final dataframe contains Coronavirus confirmed case numbers for all the states of USA 
+library(tidyverse)
+library(xts)
+library(forecast)
+startDate <- as.Date("2021-01-01")
+endDate <- as.Date("2021-11-14")
+date <- startDate 
+covidData <- data.frame()
+while(date <= endDate) {
+    f1 <- paste0(format(date, "%m-%d-%Y"),".csv")
+    fileName <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/", f1)
+    df <- read.csv(url(fileName))
+    df$Date <- as.Date(date)
+    df <- df %>% select(Province_State,Confirmed, Date)
+    covidData <- rbind(covidData, df)
+    date <- date + 1 
+}
+rm(startDate, endDate, fileName, date, df, f1)
+```
+
+## Select the data required for Oregon state 
+
+```{r}
+#' Convert the covidData data frame to timeseries (Select the data for the state of Oregon)
+#' xts handles one variable over a timeline. Select Confirmed columns but not 
+#' Confirmed + Recovered columns together (Multivariate panel)
+# Hint: 
+#' xts is easy to work with timeseries data . Load library xts 
+#' xts takes two arguments. 
+covidData_ts <- as.xts(x = covidData, order.by = covidData$Date)
+
+# Include code below to create a dataframe that contains the rows related to Oregon state 
+covidData_OR <- subset(covidData,Province_State == 'Oregon')
+
+# Include code to convert the dataframe to timeseries format 
+# use the xts method to create the timeseries data. The index will be of date format as the coronavirus data is a daily dataset 
+covidData_OR_ts <- as.xts(x = covidData_OR, order.by = covidData_OR$Date)
+
+# Include code below to plot the confirmed cases 
+ggplot(covidData, aes(x=Province_State, y=Confirmed)) + geom_bar(stat="identity")
+```
+
+## Plot 15 day moving average trend 
+
+```{r}
+#' Include code below to use a forecast::ma method with order=15 and centre = TRUE arguments 
+#' The output of the forecast::ma method is of ts type. To overlay the moving average values of confirmed cases on you need to convert this ts data to xts. The same way you created a xts object from a dataframe 
+# use lines method of base plotting system to overlay the output of forecast::ma on xts confirmed cases (15 day moving average trend is created from this plot)
+forecast <- ma(covidData, order = 15, centre = TRUE)
+forecast
+#forecast_ts <- as.xts(x = forecast, order.by = forecast_ts$Date)
+```
+
+## Plot TSLA closing price  
+
+```{r}
+TSLA_Data <- read.csv(url("https://raw.githubusercontent.com/plotly/datasets/master/tesla-stock-price.csv"))
+TSLA_Closing <- TSLA_Data %>%
+    select(date, close)
+TSLA_Closing$date <- as.Date(TSLA_Closing$date, format = "%Y/%m/%d")
+TSLA_Closing <- na.omit(TSLA_Closing)
+TSLA_Closing_xts <- xts(TSLA_Closing$close, TSLA_Closing$date)
+
+plot(TSLA_Closing_xts)
+
+
+```
+
+## Plot TSLA closing price over 30-day moving average 
+```{r}
+TSLA_MA <- forecast::ma(TSLA_Closing, order=30, centre = TRUE) 
+TSLA_MA <- xts(TSLA_MA, as.Date(TSLA_Closing$date))
+lines(TSLA_MA, col="blue") # plot moving average lines 
+```
+## Predict the next 10 day price of TSLA stock and plot the forecast  
+
+```{r}
+library(forecast)
+modelfit <- auto.arima(TSLA_Closing_xts, lambda = "auto", trace=TRUE)  
+modelForecast=forecast::forecast(modelfit,level = c(95),h=10)
+print(modelForecast) # Print the predictions, including the lower bound and upper bound values within 95% confidence interval
+plot(modelForecast)
+```
+
+## Predict the next 15 day confirmed cases of Coronavirus in Oregon states and plot the forecast  
+
+```{r}
+#' Include code below 
+covidData_OR_xts <- xts(covidData_OR$Confirmed, covidData_OR$Date)
+library(forecast)
+modelfit_OR <- auto.arima(covidData_OR_xts, lambda = "auto", trace=TRUE)  
+modelForecast_OR=forecast::forecast(modelfit_OR,level = c(95),h=10)
+print(modelForecast_OR) # Print the predictions, including the lower bound and upper bound values within 95% confidence interval
+plot(modelForecast_OR)
+```
+
